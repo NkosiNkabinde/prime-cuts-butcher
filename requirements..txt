@@ -1,0 +1,4 @@
+flask==2.0.1
+google-cloud-dialogflow==2.15.0
+boto3==1.24.0
+python-dotenv==0.20.0
