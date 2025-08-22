@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prime Cuts Butchery</title>
+    <!--<link rel="stylesheet" href="style2.css" />-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Premium Meats, Freshly Cut</h1>
+            <p>Elevate your meals with our farm-fresh selection.</p>
+            <a href="#products" class="hero-button">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Header with Navigation -->
+    <header>
+        <nav class="nav-container">
+            <h1>Prime Cuts Butchery</h1>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Grid Layout -->
+    <main class="main-grid">
+        <!-- Product Section (Flexbox) -->
+        <section id="products" class="products">
+            <h2>Our Meat Selection</h2>
+            <div class="product-grid">
+                <div class="product-card" style="--delay: 0.1s;">
+                    <img src="static/beef steak.jpeg" alt="Beef Steak">
+                    <h3>Beef Steak</h3>
+                    <p>Juicy, tender beef steak, perfect for grilling.</p>
+                    <p class="price">R150/kg</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-card" style="--delay: 0.2s;">
+                    <img src="static/chicken breast.jpeg" alt="Chicken Breast">
+                    <h3>Chicken Breast</h3>
+                    <p>Fresh, boneless chicken breast, ideal for any meal.</p>
+                    <p class="price">R35/kg</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-card" style="--delay: 0.3s;">
+                    <img src="static/pork ribs.jpeg" alt="Pork Ribs">
+                    <h3>Pork Ribs</h3>
+                    <p>Succulent pork ribs, great for BBQs.</p>
+                    <p class="price">R170/kg</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-card" style="--delay: 0.4s;">
+                    <img src="static/lamb chops.jpeg" alt="Lamb Chops">
+                    <h3>Lamb Chops</h3>
+                    <p>Tender lamb chops, full of flavor.</p>
+                    <p class="price">R100/kg</p>
+                    <button>Add to Cart</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sidebar with Animated Promotions -->
+        <aside class="sidebar">
+            <h3>Special Offers</h3>
+            <div class="promo-banner">
+                <span class="promo-text">10% Off First Order: <strong>FIRSTCUT</strong></span>
+                <span class="promo-text">Free Delivery on Orders Over $50</span>
+                <span class="promo-text">Buy 2 Steaks, Get 1 Free!</span>
+            </div>
+        </aside>
+    </main>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <h2>About Us</h2>
+        <p>Prime Cuts Butchery sources premium meats from local farms, ensuring quality and freshness. Elevate your meals with our ethically sourced products.</p>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2>Contact Us</h2>
+        <form>
+            <input type="text" placeholder="Name" required>
+            <input type="email" placeholder="Email" required>
+            <textarea placeholder="Your Message" rows="5" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Prime Cuts Butchery. All rights reserved.</p>
+    </footer>
+
+    <!-- Chatbot Icon -->
+    <div class="chatbot-icon">
+        <a href="javascript:void(0)" id="chatbot-link" title="Chat with us" onclick="toggleChatbot()">
+            <img src="{{ url_for('static', filename='chatbot-icon.png') }}" alt="Chatbot Icon">
+        </a>
+    </div>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-widget" id="chatbot-widget" style="display: none;">
+        <div class="chatbot-header">
+            <span>Prime Cuts Assistant</span>
+            <button onclick="toggleChatbot()">×</button>
+        </div>
+        <div class="chatbot-messages" id="chatbot-messages"></div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbot-input" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- JavaScript for Chatbot -->
+    <script>
+        let sessionId = null;
+
+        function toggleChatbot() {
+            const widget = document.getElementById('chatbot-widget');
+            widget.style.display = widget.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatbot-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Display user message
+            const messages = document.getElementById('chatbot-messages');
+            const userMessage = document.createElement('div');
+            userMessage.className = 'user-message';
+            userMessage.textContent = message;
+            messages.appendChild(userMessage);
+            input.value = '';
+
+            // Scroll to bottom
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, session_id: sessionId })
+                });
+                const data = await response.json();
+                sessionId = data.session_id; // Store session ID for conversation context
+
+                // Display bot response
+                const botMessage = document.createElement('div');
+                botMessage.className = 'bot-message';
+                botMessage.textContent = data.response;
+                messages.appendChild(botMessage);
+
+                // Scroll to bottom
+                messages.scrollTop = messages.scrollHeight;
+            } catch (error) {
+                console.error('Error:', error);
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'bot-message';
+                errorMessage.textContent = 'Sorry, something went wrong.';
+                messages.appendChild(errorMessage);
+            }
+        }
+
+        // Allow sending message with Enter key
+        document.getElementById('chatbot-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
